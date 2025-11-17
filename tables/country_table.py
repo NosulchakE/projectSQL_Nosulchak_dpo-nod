@@ -29,4 +29,15 @@ class CountriesTable:
         cur.execute("INSERT INTO countries(country_name) VALUES (%s)", (name,))
         self.dbconn.conn.commit()
 
+    def update_one(self, old_name, new_name):
+        cur = self.dbconn.conn.cursor()
+        cur.execute("UPDATE countries SET country_name=%s WHERE country_name=%s", (new_name, old_name))
+        self.dbconn.conn.commit()
+
+    def delete_one(self, name):
+        cur = self.dbconn.conn.cursor()
+        cur.execute("DELETE FROM countries WHERE country_name=%s", (name,))
+        self.dbconn.conn.commit()
+
+
 
