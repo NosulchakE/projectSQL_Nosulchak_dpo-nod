@@ -16,7 +16,6 @@ class Main:
     def __init__(self):
         CountriesTable.dbconn = self.connection
         MoviesTable.dbconn = self.connection
-        return
 
     # Главное меню
     def show_main_menu(self):
@@ -133,7 +132,7 @@ class Main:
 
         print("\nСписок фильмов:")
         for idx, movie in enumerate(subset, start=1+start):
-            country = movie[5] if movie[5] else "не указана"
+            country = movie[4] if movie[4] else "не указана"
             print(f"{idx}. {movie[0]} | Жанр: {movie[1]} | Длительность: {movie[2]} мин | Возраст: {movie[3]} | Страна: {country}")
 
         print(f"""
@@ -185,12 +184,13 @@ class Main:
         try:
             duration = int(duration)
             min_age = int(min_age)
-        except:
+        except ValueError:
             print("Длительность и возраст должны быть числами!")
             return
 
         MoviesTable().insert_one(title, genre, duration, min_age, country_name)
         print(f"Фильм '{title}' добавлен!")
+
     def edit_movie(self):
         table = MoviesTable()
         all_movies = table.all()
@@ -246,12 +246,10 @@ class Main:
                 self.show_main_menu()
                 next_step = self.read_next_step()
                 current_menu = self.after_main_menu(next_step)
-
             elif current_menu == "1":
                 result = self.show_countries()
                 if result == "0":
                     current_menu = "0"
-
             elif current_menu == "2":
                 result = self.show_movies()
                 if result == "0":
@@ -262,6 +260,7 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
 
 
 
