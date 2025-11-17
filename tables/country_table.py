@@ -29,3 +29,4 @@ class CountriesTable:
         cur.execute("INSERT INTO countries(country_name) VALUES (%s)", (name,))
         self.dbconn.conn.commit()
 
+
