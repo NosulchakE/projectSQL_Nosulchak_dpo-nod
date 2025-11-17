@@ -36,3 +36,18 @@ class MoviesTable:
         )
         self.dbconn.conn.commit()
 
+    def update_one(self, old_title, title, genre, duration, age, country):
+        cur = self.dbconn.conn.cursor()
+        cur.execute("""
+            UPDATE movies
+            SET title=%s, genre=%s, duration_minutes=%s, minimum_age=%s, country_name=%s
+            WHERE title=%s
+        """, (title, genre, duration, age, country, old_title))
+        self.dbconn.conn.commit()
+
+    def delete_one(self, title):
+        cur = self.dbconn.conn.cursor()
+        cur.execute("DELETE FROM movies WHERE title=%s", (title,))
+        self.dbconn.conn.commit()
+
+
