@@ -3,8 +3,8 @@ sys.path.append('tables')
 
 from project_config import ProjectConfig
 from dbconnection import DbConnection
-from country_table import CountryTable
-from movies_table import MoviesTable
+from tables.country_table import CountryTable
+from tables.movies_table import MoviesTable
 
 class Main:
 
@@ -101,3 +101,4 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
