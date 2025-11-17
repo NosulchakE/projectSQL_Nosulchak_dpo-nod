@@ -3,19 +3,12 @@
 import yaml
 
 class ProjectConfig:
-    """Класс считывает базовые настройки из файла config.yaml"""
-
     def __init__(self):
-        with open('config.yaml') as f:
-            config = yaml.safe_load(f)
-            self.dbname = config['dbname']
-            self.user = config['user']
-            self.password = config['password']
-            self.host = config['host']
-            self.dbtableprefix = config['dbtableprefix']
+        with open("config.yaml", "r", encoding="utf-8") as f:
+            cfg = yaml.safe_load(f)
+        self.dbname = cfg.get("dbname", "postgres")
+        self.user = cfg.get("user", "postgres")
+        self.password = cfg.get("password", "")
+        self.host = cfg.get("host", "localhost")
+        self.dbtableprefix = cfg.get("dbtableprefix", "public.")
 
-# Этот метод запускается только, если запускать
-# данный файл, а не подключать его.
-if __name__ == "__main__":
-    x = ProjectConfig()
-    print(x.dbfilepath)
