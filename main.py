@@ -1,128 +1,103 @@
+import sys
+sys.path.append('tables')
+
 from project_config import ProjectConfig
 from dbconnection import DbConnection
-from tables.country_table import CountriesTable
-from tables.movies_table import MoviesTable
+from country_table import CountryTable
+from movies_table import MoviesTable
 
-PAGE_SIZE = 5
+class Main:
 
-class MainApp:
+    config = ProjectConfig()
+    connection = DbConnection(config)
+
     def __init__(self):
-        self.config = ProjectConfig()
-        self.conn = DbConnection(self.config)
-        CountriesTable.dbconn = self.conn
-        MoviesTable.dbconn = self.conn
+        # Инициализируем соединение для таблиц
+        CountryTable.dbconn = self.connection
+        MoviesTable.dbconn = self.connection
+        return
 
-        self.countries = CountriesTable()
-        self.movies = MoviesTable()
-        self.countries.create()
-        self.movies.create()
+    # Главное меню
+    def show_main_menu(self):
+        menu = """Добро пожаловать! 
+Основное меню (выберите цифру в соответствии с необходимым действием): 
+    1 - Управление странами;
+    2 - Управление фильмами;
+    9 - выход."""
+        print(menu)
+        return
 
-    def main_menu(self):
-        while True:
-            print("\n=== Главное меню ===")
-            print("1 - Управление странами")
-            print("2 - Управление фильмами")
-            print("9 - Выход")
-            choice = input("=> ").strip()
-            if choice == "1":
-                self.countries_menu()
-            elif choice == "2":
-                self.movies_menu()
-            elif choice == "9":
-                break
-            else:
-                print("Неверный ввод!")
+    # Считываем ввод
+    def read_next_step(self):
+        return input("=> ").strip()
 
-    # ----------------- Страны -----------------
-    def countries_menu(self):
-        page = 0
-        while True:
-            countries = self.countries.all(limit=PAGE_SIZE, offset=page*PAGE_SIZE)
-            print("\n=== Страны ===")
-            for idx, row in enumerate(countries, start=1):
-                print(f"{idx}. {row[0]}")
-            print("\nn - следующая, p - предыдущая, a - добавить, e - изменить, d - удалить, 0 - назад")
-            cmd = input("=> ").strip().lower()
-            if cmd == "n":
-                page += 1
-            elif cmd == "p" and page > 0:
-                page -= 1
-            elif cmd == "a":
-                name = input("Название страны: ").strip()
-                if name:
-                    self.countries.insert_one(name)
-            elif cmd == "e":
-                num = int(input("Номер страны для редактирования: "))
-                if 1 <= num <= len(countries):
-                    old_name = countries[num-1][0]
-                    new_name = input(f"Новое название для '{old_name}': ").strip()
-                    self.countries.update_one(old_name, new_name)
-            elif cmd == "d":
-                num = int(input("Номер страны для удаления: "))
-                if 1 <= num <= len(countries):
-                    self.countries.delete_one(countries[num-1][0])
-            elif cmd == "0":
-                break
+    # После выбора в главном меню
+    def after_main_menu(self, next_step):
+        if next_step == "1":
+            return "1"  # Меню стран
+        elif next_step == "2":
+            return "2"  # Меню фильмов
+        elif next_step == "9":
+            return "9"  # Выход
+        else:
+            print("Выбрано неверное число! Повторите ввод!")
+            return "0"
 
-    # ----------------- Фильмы -----------------
-    def movies_menu(self):
-        page = 0
-        while True:
-            movies = self.movies.all(limit=PAGE_SIZE, offset=page*PAGE_SIZE)
-            print("\n=== Фильмы ===")
-            for idx, row in enumerate(movies, start=1):
-                title, genre, duration, age, country = row
-                print(f"{idx}. {title} | {genre} | {duration} мин | {age}+ | {country}")
-            print("\nn - следующая, p - предыдущая, a - добавить, e - изменить, d - удалить, 0 - назад")
-            cmd = input("=> ").strip().lower()
-            if cmd == "n":
-                page += 1
-            elif cmd == "p" and page > 0:
-                page -= 1
-            elif cmd == "a":
-                self.add_movie()
-            elif cmd == "e":
-                self.edit_movie(movies)
-            elif cmd == "d":
-                self.delete_movie(movies)
-            elif cmd == "0":
-                break
+    # --- Меню стран ---
+    def show_countries(self):
+        menu = """Управление странами:
+    1 - добавить страну
+    2 - редактировать страну
+    3 - удалить страну
+    n - следующая страница
+    p - предыдущая страница
+    0 - возврат в главное меню"""
+        print(menu)
 
-    def add_movie(self):
-        title = input("Название: ").strip()
-        genre = input("Жанр: ").strip()
-        duration = int(input("Продолжительность (мин): "))
-        age = int(input("Возрастное ограничение: "))
-        countries = self.countries.all()
-        for i, c in enumerate(countries, start=1):
-            print(f"{i}. {c[0]}")
-        cnum = int(input("Номер страны: "))
-        country_name = countries[cnum-1][0] if 1 <= cnum <= len(countries) else None
-        self.movies.insert_one(title, genre, duration, age, country_name)
+        # Показываем текущие страны
+        lst = CountryTable().all()
+        print("\nСписок стран:")
+        for idx, country in enumerate(lst, start=1):
+            print(f"{idx}. {country[0]}")
 
-    def edit_movie(self, movies):
-        num = int(input("Номер фильма для редактирования: "))
-        if 1 <= num <= len(movies):
-            old_title, genre, duration, age, country = movies[num-1]
-            title = input(f"Название [{old_title}]: ").strip() or old_title
-            genre = input(f"Жанр [{genre}]: ").strip() or genre
-            duration_input = input(f"Продолжительность [{duration}]: ").strip()
-            duration = int(duration_input) if duration_input else duration
-            age_input = input(f"Возрастное ограничение [{age}]: ").strip()
-            age = int(age_input) if age_input else age
-            countries = self.countries.all()
-            for i, c in enumerate(countries, start=1):
-                print(f"{i}. {c[0]}")
-            cnum = int(input(f"Номер страны [{country}]: "))
-            country_name = countries[cnum-1][0] if 1 <= cnum <= len(countries) else country
-            self.movies.update_one(old_title, title, genre, duration, age, country_name)
+    # --- Меню фильмов ---
+    def show_movies(self):
+        menu = """Управление фильмами:
+    1 - добавить фильм
+    2 - редактировать фильм
+    3 - удалить фильм
+    n - следующая страница
+    p - предыдущая страница
+    0 - возврат в главное меню"""
+        print(menu)
 
-    def delete_movie(self, movies):
-        num = int(input("Номер фильма для удаления: "))
-        if 1 <= num <= len(movies):
-            self.movies.delete_one(movies[num-1][0])
+        # Показываем текущие фильмы
+        lst = MoviesTable().all()
+        print("\nСписок фильмов:")
+        for idx, movie in enumerate(lst, start=1):
+            country = movie[5] if movie[5] else "не указана"
+            print(f"{idx}. {movie[0]} | Жанр: {movie[1]} | Длительность: {movie[2]} мин | Возраст: {movie[3]} | Страна: {country}")
 
+    # Основной цикл проекта
+    def main_cycle(self):
+        current_menu = "0"
+        while current_menu != "9":
+            if current_menu == "0":
+                self.show_main_menu()
+                next_step = self.read_next_step()
+                current_menu = self.after_main_menu(next_step)
+            elif current_menu == "1":
+                self.show_countries()
+                input("Нажмите Enter для возврата в главное меню...")
+                current_menu = "0"
+            elif current_menu == "2":
+                self.show_movies()
+                input("Нажмите Enter для возврата в главное меню...")
+                current_menu = "0"
+
+# ============================
+# Запуск проекта
+# ============================
 if __name__ == "__main__":
-    app = MainApp()
-    app.main_menu()
-
+    app = Main()
+    app.main_cycle()
