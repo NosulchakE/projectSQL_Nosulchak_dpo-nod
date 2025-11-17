@@ -72,17 +72,16 @@ class Main:
             self.delete_country()
         elif choice == "n":
             if end < len(all_countries):
-                self.show_countries(page + 1)
-                return
+                return self.show_countries(page + 1)
         elif choice == "p":
             if page > 0:
-                self.show_countries(page - 1)
-                return
+                return self.show_countries(page - 1)
         elif choice == "0":
-            return
+            return "0"
         else:
             print("Неверный выбор!")
-        self.show_countries(page)
+
+        return self.show_countries(page)
 
     def add_country(self):
         name = input("Введите название страны: ").strip()
@@ -155,17 +154,15 @@ class Main:
             self.delete_movie()
         elif choice == "n":
             if end < len(all_movies):
-                self.show_movies(page + 1)
-                return
+                return self.show_movies(page + 1)
         elif choice == "p":
             if page > 0:
-                self.show_movies(page - 1)
-                return
+                return self.show_movies(page - 1)
         elif choice == "0":
-            return
+            return "0"
         else:
             print("Неверный выбор!")
-        self.show_movies(page)
+        return self.show_movies(page)
 
     def add_movie(self):
         title = input("Название фильма: ").strip()
@@ -250,12 +247,21 @@ class Main:
                 self.show_main_menu()
                 next_step = self.read_next_step()
                 current_menu = self.after_main_menu(next_step)
+
             elif current_menu == "1":
-                self.show_countries()
+                result = self.show_countries()
+                if result == "0":
+                    current_menu = "0"
+
             elif current_menu == "2":
-                self.show_movies()
+                result = self.show_movies()
+                if result == "0":
+                    current_menu = "0"
+
 
 # ============================
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
+
