@@ -3,7 +3,7 @@ sys.path.append('tables')
 
 from project_config import ProjectConfig
 from dbconnection import DbConnection
-from tables.country_table import CountryTable
+from tables.country_table import CountriesTable
 from tables.movies_table import MoviesTable
 
 class Main:
@@ -13,7 +13,7 @@ class Main:
 
     def __init__(self):
         # Инициализируем соединение для таблиц
-        CountryTable.dbconn = self.connection
+        CountriesTable.dbconn = self.connection
         MoviesTable.dbconn = self.connection
         return
 
@@ -25,7 +25,6 @@ class Main:
     2 - Управление фильмами;
     9 - выход."""
         print(menu)
-        return
 
     # Считываем ввод
     def read_next_step(self):
@@ -55,7 +54,7 @@ class Main:
         print(menu)
 
         # Показываем текущие страны
-        lst = CountryTable().all()
+        lst = CountriesTable().all()
         print("\nСписок стран:")
         for idx, country in enumerate(lst, start=1):
             print(f"{idx}. {country[0]}")
@@ -101,4 +100,3 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
-
