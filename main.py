@@ -88,7 +88,7 @@ class Main:
         if not name:
             print("Название не может быть пустым.")
             return
-        CountriesTable().insert_one([name])
+        CountriesTable().insert_one(name)
         print(f"Страна '{name}' добавлена!")
 
     def edit_country(self):
@@ -170,11 +170,11 @@ class Main:
         duration = input("Продолжительность (мин): ").strip()
         min_age = input("Минимальный возраст: ").strip()
 
-        # Выбор страны
         countries = CountriesTable().all()
         print("Выберите страну производства:")
         for idx, c in enumerate(countries, start=1):
             print(f"{idx}. {c[0]}")
+
         country_choice = input("Номер страны (или Enter для пустого): ").strip()
         country_name = None
         if country_choice.isdigit():
@@ -189,9 +189,8 @@ class Main:
             print("Длительность и возраст должны быть числами!")
             return
 
-        MoviesTable().insert_one([title, genre, duration, min_age, country_name])
+        MoviesTable().insert_one(title, genre, duration, min_age, country_name)
         print(f"Фильм '{title}' добавлен!")
-
     def edit_movie(self):
         table = MoviesTable()
         all_movies = table.all()
@@ -263,5 +262,6 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
 
 
