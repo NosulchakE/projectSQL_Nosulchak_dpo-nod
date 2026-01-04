@@ -22,6 +22,16 @@ class Main:
         CountriesTable.dbconn = self.connection
         MoviesTable.dbconn = self.connection
 
+    # -------------------
+    # Метод для автоматического создания таблиц
+    # -------------------
+    def db_init(self):
+        countries = CountriesTable()
+        movies = MoviesTable()
+        countries.create()
+        movies.create()
+        print("Таблицы созданы или уже существуют.")
+
     # Главное меню
     def show_main_menu(self):
         print("""Добро пожаловать! 
@@ -268,6 +278,7 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
 
 
 
