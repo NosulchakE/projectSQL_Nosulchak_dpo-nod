@@ -30,7 +30,7 @@ class DbTable:
         return []
 
     def create(self):
-        sql = "CREATE TABLE " + self.table_name() + "("
+        sql = "CREATE TABLE IF NOT EXISTS " + self.table_name() + "("
         arr = [k + " " + " ".join(v) for k, v in sorted(self.columns().items(), key = lambda x: x[0])]
         sql += ", ".join(arr + self.table_constraints())
         sql += ")"
@@ -83,3 +83,4 @@ class DbTable:
         cur = self.dbconn.conn.cursor()
         cur.execute(sql)
         return cur.fetchall()   
+
