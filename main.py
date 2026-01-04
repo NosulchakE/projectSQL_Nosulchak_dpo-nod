@@ -245,6 +245,9 @@ class Main:
     # Основной цикл
     # -------------------
     def main_cycle(self):
+        # автоматическое создание таблиц (как в эталонном проекте)
+        self.db_init()
+
         current_menu = "0"
         while current_menu != "9":
             if current_menu == "0":
@@ -265,6 +268,7 @@ class Main:
 if __name__ == "__main__":
     app = Main()
     app.main_cycle()
+
 
 
 
